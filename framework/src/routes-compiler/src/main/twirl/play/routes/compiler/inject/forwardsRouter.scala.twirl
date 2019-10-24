@@ -11,7 +11,6 @@
 @for(p <- pkg) {package @p}
 
 import play.core.routing._
-import play.core.routing.HandlerInvokerFactory._
 import play.core.j._
 
 import play.api.mvc._
@@ -23,13 +22,20 @@ class Routes(
   @markLines(dep.rule)
   @dep.ident: @dep.clazz,}
   val prefix: String
-) extends GeneratedRouter @ob
+)(implicit hiff: HandlerInvokerFactoryFactory) extends GeneratedRouter @ob
+
+  private implicit def hif[A]: HandlerInvokerFactory[A] = hiff.handlerInvokerFactory[A]
 
    @@javax.inject.Inject()
    def this(errorHandler: play.api.http.HttpErrorHandler@for(dep <- deps) {,
     @markLines(dep.rule)
     @dep.ident: @dep.clazz}
-  ) = this(errorHandler, @for(dep <- deps){@dep.ident, }"/")
+  ) = this(errorHandler, @for(dep <- deps){@dep.ident, }"/")(HandlerInvokerFactoryFactory.passThrough)
+
+   def this(errorHandler: play.api.http.HttpErrorHandler@for(dep <- deps) {,
+    @markLines(dep.rule)
+    @dep.ident: @dep.clazz}
+  )(implicit hiff: HandlerInvokerFactoryFactory) = this(errorHandler, @for(dep <- deps){@dep.ident, }"/")
 
   import ReverseRouteContext.empty
 

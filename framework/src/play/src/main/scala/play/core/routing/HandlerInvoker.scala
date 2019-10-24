@@ -238,3 +238,13 @@ object HandlerInvokerFactory {
     }
   }
 }
+
+trait HandlerInvokerFactoryFactory {
+  def handlerInvokerFactory[T]: HandlerInvokerFactory[T]
+}
+
+object HandlerInvokerFactoryFactory {
+  def passThrough[T]: HandlerInvokerFactoryFactory[T] = new HandlerInvokerFactoryFactory {
+    override def handlerInvokerFactory[T] = HandlerInvokerFactory.passThrough[T]
+  }
+}
